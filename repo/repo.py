@@ -8,7 +8,7 @@ from repo.modules.users import UsersRepo
 
 class Repo:
     def __init__(self, username: str, password: str, ip: str, port: int, db: str) -> None:
-        self.engine = create_engine(f'mysql+pymysql://{username}:{password}@{ip}:{port}/{db}')
+        self.engine = create_engine(f'mysql+pymysql://{username}:{password}@{ip}:{port}/{db}', pool_pre_ping=True, pool_recycle=3600)
 
         self._Session = sessionmaker(bind=self.engine)
         self.session = self._Session()
