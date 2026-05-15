@@ -25,25 +25,25 @@ class UsersRepo(BaseRepo):
             return False
 
         try:
-            with self._s.begin():
-                self._s.add(user)
+            with self._s.begin() as s:
+                s.add(user)
             return True
         except Exception as e:
             logging.error(e)
             return False
 
     def get(self, id: int) -> typing.Optional[UserData]:
-        with self._s.begin():
-            return self._s.execute(select(UserData).where(UserData.id == id)).scalar_one_or_none()
+        with self._s.begin() as s:
+            return s.execute(select(UserData).where(UserData.id == id)).scalar_one_or_none()
 
     def get_by_connection(self, connection_id: str) -> typing.Optional[UserData]:
-        with self._s.begin():
-            return self._s.execute(select(UserData).where(UserData.connection_id == connection_id)).scalar_one_or_none()
+        with self._s.begin() as s:
+            return s.execute(select(UserData).where(UserData.connection_id == connection_id)).scalar_one_or_none()
 
     def delete(self, user: UserData) -> bool:
         try:
-            with self._s.begin():
-                self._s.delete(user)
+            with self._s.begin() as s:
+                s.delete(user)
             return True
         except Exception as e:
             logging.error(e)

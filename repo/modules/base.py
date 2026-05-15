@@ -2,14 +2,14 @@ import abc
 import typing
 
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, sessionmaker
 
 Base = declarative_base()
 
 
 class BaseRepo(abc.ABC):
     def __init__(self, s) -> None:
-        self._s: Session = s
+        self._s: sessionmaker[Session] = s
 
     @abc.abstractmethod
     def get(self, **kwargs) -> typing.Optional[Base]:

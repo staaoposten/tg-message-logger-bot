@@ -30,8 +30,8 @@ class MessagesRepo(BaseRepo):
 
     def add(self, message: MessageData) -> bool:
         try:
-            with self._s.begin():
-                self._s.add(message)
+            with self._s.begin() as s:
+                s.add(message)
 
             return True
         except Exception as e:
@@ -39,23 +39,23 @@ class MessagesRepo(BaseRepo):
             return False
 
     def get(self, message_id: int, connection_id: str) -> typing.Optional[MessageData]:
-        with self._s.begin():
-            return self._s.execute(select(MessageData).where(MessageData.message_id == message_id, MessageData.connection_id == connection_id)).scalar_one_or_none()
+        with self._s.begin() as s:
+            return s.execute(select(MessageData).where(MessageData.message_id == message_id,
+                                                       MessageData.connection_id == connection_id)).scalar_one_or_none()
 
     def delete(self, message: MessageData) -> bool:
         try:
-            with self._s.begin():
-                self._s.delete(message)
+            with self._s.begin() as s:
+                s.delete(message)
             return True
         except Exception as e:
             logging.error(e)
             return False
 
-
     def delete_by_cid(self, connection_id) -> bool:
         try:
-            with self._s.begin():
-                self._s.execute(delete(MessageData).where(MessageData.connection_id == connection_id))
+            with self._s.begin() as s:
+                s.execute(delete(MessageData).where(MessageData.connection_id == connection_id))
             return True
         except Exception as e:
             logging.error(e)

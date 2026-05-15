@@ -11,17 +11,17 @@ class Repo:
         self.engine = create_engine(f'mysql+pymysql://{username}:{password}@{ip}:{port}/{db}', pool_pre_ping=True, pool_recycle=3600)
 
         self._Session = sessionmaker(bind=self.engine)
-        self.session = self._Session()
 
         Base.metadata.create_all(self.engine)
 
     def save(self) -> None:
-        self.session.commit()
+        with self._Session() as session:
+            session.commit()
 
     @property
     def users(self) -> UsersRepo:
-        return UsersRepo(s=self.session)
+        return UsersRepo(s=self._Session)
 
     @property
     def messages(self) -> MessagesRepo:
-        return MessagesRepo(s=self.session)
+        return MessagesRepo(s=self._Session)
