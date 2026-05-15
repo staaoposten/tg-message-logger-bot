@@ -10,7 +10,7 @@ class Repo:
     def __init__(self, username: str, password: str, ip: str, port: int, db: str) -> None:
         self.engine = create_engine(f'mysql+pymysql://{username}:{password}@{ip}:{port}/{db}', pool_pre_ping=True, pool_recycle=3600)
 
-        self._Session = sessionmaker(bind=self.engine)
+        self._Session = sessionmaker(bind=self.engine, expire_on_commit=False)
 
         Base.metadata.create_all(self.engine)
 
