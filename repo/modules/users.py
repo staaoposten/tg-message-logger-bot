@@ -1,7 +1,7 @@
 import logging
 import typing
 
-from sqlalchemy import Column, String, BigInteger
+from sqlalchemy import Column, String, BigInteger, select
 
 from repo.modules.base import Base, BaseRepo
 
@@ -25,24 +25,26 @@ class UsersRepo(BaseRepo):
             return False
 
         try:
-            self._s.add(user)
-            self._s.commit()
+            with self._s.begin():
+                self._s.add(user)
             return True
         except Exception as e:
             logging.error(e)
             return False
 
     def get(self, id: int) -> typing.Optional[UserData]:
-        return self._s.query(UserData).get({"id": id})
+        with self._s.begin():
+            return self._s.execute(select(UserData).where(UserData.id == id)).scalar_one_or_none()
 
     def get_by_connection(self, connection_id: str) -> typing.Optional[UserData]:
-        return self._s.query(UserData).filter_by(connection_id=connection_id).first()
-
-    def update_connection_id(self, user: UserData, connection_id: str) -> bool:
-        user.connection_id = connection_id
-
-        self._s.commit()
+        with self._s.begin():
+            return self._s.execute(select(UserData).where(UserData.connection_id == connection_id)).scalar_one_or_none()
 
     def delete(self, user: UserData) -> bool:
-        self._s.delete(user)
-        self._s.commit()
+        try:
+            with self._s.begin():
+                self._s.delete(user)
+            return True
+        except Exception as e:
+            logging.error(e)
+            return False

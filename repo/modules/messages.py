@@ -1,7 +1,7 @@
 import logging
 import typing
 
-from sqlalchemy import Column, Integer, String, BigInteger, Boolean, Text
+from sqlalchemy import Column, Integer, String, BigInteger, Boolean, Text, select, delete
 
 from repo.modules.base import Base, BaseRepo
 
@@ -30,20 +30,33 @@ class MessagesRepo(BaseRepo):
 
     def add(self, message: MessageData) -> bool:
         try:
-            self._s.add(message)
-            self._s.commit()
+            with self._s.begin():
+                self._s.add(message)
+
             return True
         except Exception as e:
             logging.error(e)
             return False
 
     def get(self, message_id: int, connection_id: str) -> typing.Optional[MessageData]:
-        return self._s.query(MessageData).filter_by(message_id=message_id, connection_id=connection_id).first()
+        with self._s.begin():
+            return self._s.execute(select(MessageData).where(MessageData.message_id == message_id, MessageData.connection_id == connection_id)).scalar_one_or_none()
 
     def delete(self, message: MessageData) -> bool:
-        self._s.delete(message)
-        self._s.commit()
+        try:
+            with self._s.begin():
+                self._s.delete(message)
+            return True
+        except Exception as e:
+            logging.error(e)
+            return False
+
 
     def delete_by_cid(self, connection_id) -> bool:
-        self._s.query(MessageData).filter(MessageData.connection_id == connection_id).delete()
-        self._s.commit()
+        try:
+            with self._s.begin():
+                self._s.execute(delete(MessageData).where(MessageData.connection_id == connection_id))
+            return True
+        except Exception as e:
+            logging.error(e)
+            return False
