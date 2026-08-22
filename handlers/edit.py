@@ -1,4 +1,5 @@
 import typing
+from pydoc import html
 
 from aiogram import Router, Bot
 from aiogram.enums import ContentType
@@ -56,7 +57,7 @@ async def text_edit(bm: Message, bot: Bot, repo: Repo) -> None:
              "\nNew message:"
              "<blockquote expandable>{new_msg}</blockquote>",
              locale=user.language).format(user_link=user_link,
-                                          name=bm.chat.full_name,
+                                          name=html.escape(bm.chat.full_name),
                                           new_msg=bm.html_text,
                                           old_msg=TextEncryptor(key=bm.business_connection_id).decrypt(
                                               message.message))
@@ -93,7 +94,7 @@ async def media_edit(bm: Message, bot: Bot, repo: Repo) -> None:
              "\nNew message:"
              "<blockquote expandable>{new_msg}</blockquote>",
              locale=user.language).format(user_link=user_link,
-                                          name=bm.chat.full_name,
+                                          name=html.escape(bm.chat.full_name),
                                           new_msg=bm.html_text,
                                           old_msg=TextEncryptor(key=bm.business_connection_id).decrypt(
                                               message.message) if message.message is not None else "")
@@ -145,7 +146,7 @@ async def location_edit(bm: Message, bot: Bot, repo: Repo) -> None:
         locale=user.language
     ).format(
         user_link=user_link,
-        name=bm.chat.full_name
+        name=html.escape(bm.chat.full_name)
     )
 
     await bot.send_message(chat_id=user.id, text=text)

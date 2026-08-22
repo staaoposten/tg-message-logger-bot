@@ -1,4 +1,5 @@
 import asyncio
+import html
 import logging
 
 from aiogram import Router, Bot
@@ -40,7 +41,7 @@ async def text_delete(bdm: BusinessMessagesDeleted, bot: Bot, repo: Repo) -> Non
                  "\n\nMessage by <b><a href='{user_link}'>{name}</a></b>:"
                  "<blockquote expandable>{msg}</blockquote>",
                  locale=user.language).format(user_link=user_link,
-                                              name=bdm.chat.full_name,
+                                              name=html.escape(bdm.chat.full_name),
                                               msg=TextEncryptor(key=bdm.business_connection_id).decrypt(
                                                   message.message))
 
@@ -79,7 +80,7 @@ async def media_delete(bdm: BusinessMessagesDeleted, bot: Bot, repo: Repo) -> No
         text = _("<b>🗑 Deletion noticed!</b>"
                  "\n\nMessage by <b><a href='{user_link}'>{name}</a></b>:",
                  locale=user.language).format(user_link=user_link,
-                                              name=bdm.chat.full_name)
+                                              name=html.escape(bdm.chat.full_name))
 
         if message.message is None:
             pass
@@ -145,7 +146,7 @@ async def nocap_media_delete(bdm: BusinessMessagesDeleted, bot: Bot, repo: Repo)
         text = _("<b>🗑 Deletion noticed!</b>"
                  "\n\nMessage by <b><a href='{user_link}'>{name}</a></b>:",
                  locale=user.language).format(user_link=user_link,
-                                              name=bdm.chat.full_name)
+                                              name=html.escape(bdm.chat.full_name))
 
         t = await bot.send_message(chat_id=user.id, text=text)
 
