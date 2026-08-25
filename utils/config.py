@@ -29,6 +29,9 @@ def parse_config_file(config_file: str) -> Dict[str, Dict[str, Any]]:
 class BotConfig(BaseModel):
     token: str
 
+    api_server: str = 'n'
+    is_api_local: bool = False
+
 
 class DatabaseConfig(BaseModel):
     username: str

@@ -2,7 +2,9 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher
+from aiogram.client.telegram import TelegramAPIServer
 from aiogram.enums import ParseMode, ContentType
+from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.types import BusinessConnection, Message, BotCommand
 from aiogram.utils.i18n import gettext as _, I18n, SimpleI18nMiddleware
 
@@ -89,10 +91,19 @@ async def get_chat_id(msg: Message, bot: Bot) -> None:
 
 
 async def main() -> None:
+    session = None
+    if config.BOT.api_server != "n":
+        session = AiohttpSession(
+            api=TelegramAPIServer.from_base(config.BOT.api_server, is_local=config.BOT.is_api_local)
+        )
+        logging.info(f"Using custom Telegram API server: {config.BOT.api_server} [local: {config.BOT.is_api_local}]")
+
+
     bot = Bot(
         token=config.BOT.token,
         parse_mode=ParseMode.HTML,
         disable_web_page_preview=True,
+        session=session
     )
 
     # English commands translation
