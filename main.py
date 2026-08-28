@@ -2,6 +2,7 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher
+from aiogram.client.default import DefaultBotProperties
 from aiogram.client.telegram import TelegramAPIServer
 from aiogram.enums import ParseMode, ContentType
 from aiogram.client.session.aiohttp import AiohttpSession
@@ -108,8 +109,10 @@ async def main() -> None:
 
     bot = Bot(
         token=config.BOT.token,
-        parse_mode=ParseMode.HTML,
-        disable_web_page_preview=True,
+        default=DefaultBotProperties(
+            parse_mode=ParseMode.HTML,
+            link_preview_is_disabled=True
+        ),
         session=session
     )
 
