@@ -1,49 +1,28 @@
 from configparser import ConfigParser
 from typing import Dict, Any
 
-from pydantic import BaseModel, SecretStr
-
-
-def parse_config_file(config_file: str) -> Dict[str, Dict[str, Any]]:
-    config = ConfigParser()
-    config.read(config_file)
-
-    config_data = {}
-
-    for section in config.sections():
-        main_section = section.split('.')[0]
-
-        if section != main_section:
-            secondary_section = section.split('.')[1]
-            if main_section in config_data.keys():
-                config_data[main_section][secondary_section] = dict(config.items(section))
-            else:
-                config_data[main_section] = {}
-                config_data[main_section][secondary_section] = dict(config.items(section))
-        else:
-            config_data[section] = dict(config.items(section))
-
-    return config_data
+from auto_configparser import AutoConfig
+from pydantic import BaseModel
 
 
 class BotConfig(BaseModel):
-    token: str
+    token: str = None
 
     api_server: str = 'n'
     is_api_local: bool = False
 
 
 class DatabaseConfig(BaseModel):
-    username: str
-    password: str
-    ip: str
-    port: int
-    db: str
+    username: str = None
+    password: str = None
+    ip: str = "localhost"
+    port: int = 3306
+    db: str = "MessageLogBot"
 
 
-class Config(BaseModel):
-    DATABASE: DatabaseConfig
-    BOT: BotConfig
+class Config(AutoConfig):
+    DATABASE: DatabaseConfig = DatabaseConfig()
+    BOT: BotConfig = BotConfig()
 
 
-config = Config(**parse_config_file("config.ini"))
+config = Config().load()
