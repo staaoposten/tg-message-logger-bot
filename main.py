@@ -5,7 +5,9 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.telegram import TelegramAPIServer
 from aiogram.enums import ParseMode, ContentType
 from aiogram.client.session.aiohttp import AiohttpSession
-from aiogram.types import BusinessConnection, Message, BotCommand
+from aiogram.exceptions import TelegramForbiddenError
+from aiogram.filters import ExceptionTypeFilter
+from aiogram.types import BusinessConnection, Message, BotCommand, ErrorEvent
 from aiogram.utils.i18n import gettext as _, I18n, SimpleI18nMiddleware
 
 from filters.ContentTypeFilter import ContentTypeFilter
@@ -88,6 +90,11 @@ async def get_chat_id(msg: Message, bot: Bot) -> None:
     await bot.send_photo(chat_id=msg.from_user.id,
                          caption=text,
                          photo="https://omeba-work.com/screenshoot/fc36db79d525fb040fbad9c8039c8dca.jpg")
+
+
+@dp.error(ExceptionTypeFilter(TelegramForbiddenError))
+async def error_handler(event: ErrorEvent) -> None:
+    logging.error(f"Response was not send to the user because of: {event.exception}")
 
 
 async def main() -> None:
