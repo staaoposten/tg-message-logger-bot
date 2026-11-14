@@ -11,6 +11,7 @@ from aiogram.filters import ExceptionTypeFilter
 from aiogram.types import BusinessConnection, Message, BotCommand, ErrorEvent
 from aiogram.utils.i18n import gettext as _, I18n, SimpleI18nMiddleware
 
+from middlewares.whitelist import WhitelistMiddleware
 from filters.ContentTypeFilter import ContentTypeFilter
 from handlers.deleting import message_delete_route
 from handlers.edit import message_edit_route
@@ -27,6 +28,7 @@ logging.basicConfig(level=logging.INFO,
 dp = Dispatcher()
 i18n = I18n(path="locales", default_locale="en", domain="messages")
 
+dp.update.outer_middleware(WhitelistMiddleware())
 dp.update.middleware(SimpleI18nMiddleware(i18n=i18n))
 dp.update.middleware(UsersMiddleware())
 

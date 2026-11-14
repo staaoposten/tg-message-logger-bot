@@ -1,0 +1,6 @@
+BOT_TOKEN= #your bot token, you can get one in @BotFather
+ALLOWED_IDS= #ids of telegram accounts that can access the bot. empty equals everyone, so be careful if u want to keep it private :3
+DB_ROOT_PASSWORD= #root db pass, plz change it to something secure
+DB_NAME=tgbot
+DB_USER=tgbot
+DB_PASSWORD= #same as db_root_password, plz dont leave it with "123456" or smth like this :3

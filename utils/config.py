@@ -10,6 +10,7 @@ class BotConfig(BaseModel):
 
     api_server: str = 'n'
     is_api_local: bool = False
+    allowed_ids: str = ""
 
 
 class DatabaseConfig(BaseModel):
